@@ -43,7 +43,7 @@ class Window(QtWidgets.QMainWindow):
         btn_choose = QtWidgets.QPushButton("Wybierz obraz wejściowy", self)
         btn_choose.setGeometry(30, 25, 350, 50)
         btn_choose.setStyleSheet("font-size: 18px;")
-        btn_choose.clicked.connect(self.choose)
+        btn_choose.clicked.connect(self.choose_file)
 
         self.label1.setGeometry(120, 545, 220, 100)
         self.label2.setGeometry(400, 545, 220, 100)
@@ -133,8 +133,13 @@ class Window(QtWidgets.QMainWindow):
         #TODO co się dzieje po naciśnięciu Start
         print("Start")
 
-    def choose(self):
+    def choose_file(self):
         print("Choosed")
+        name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File')
+        pixmap = QtGui.QPixmap(name[0])
+        pixmap = pixmap.scaled(self.image_label1.width(),
+                               self.image_label1.height())
+        self.image_label1.setPixmap(pixmap)
 
 def run():
     app = QtWidgets.QApplication(sys.argv)
