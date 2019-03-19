@@ -12,6 +12,9 @@ class Window(QtWidgets.QMainWindow):
         self.label1 = QtWidgets.QLabel(self)
         self.label2 = QtWidgets.QLabel(self)
         self.label3 = QtWidgets.QLabel(self)
+        self.label4 = QtWidgets.QLabel(self)
+
+        self.b2 = QtWidgets.QCheckBox(self)
 
         self.slider_label1 = QtWidgets.QLabel(self)
         self.slider_label2 = QtWidgets.QLabel(self)
@@ -45,6 +48,12 @@ class Window(QtWidgets.QMainWindow):
         btn_choose.setGeometry(30, 25, 350, 50)
         btn_choose.setStyleSheet("font-size: 18px;")
         btn_choose.clicked.connect(self.choose_file)
+
+        self.b2.setGeometry(920, 25, 320, 50)
+
+        self.label4.setGeometry(800, 25, 100, 50)
+        self.label4.setText("Filtrowanie")
+        self.label4.setStyleSheet("font-size: 18px;")
 
         self.label1.setGeometry(120, 545, 220, 100)
         self.label2.setGeometry(400, 545, 220, 100)
@@ -132,18 +141,17 @@ class Window(QtWidgets.QMainWindow):
 
     def start(self):
 
-        step = self.s3.value()
+        step = self.s1.value()
         detectorNumber = self.s2.value()
         l = self.s3.value()
-        #r = self.image_label1.width()**2 + self.image_label1.height()**2
-        r = 2
+        r = 300
 
-        for i in range(0,360,step):
+        for i in range(0, 360, step):
             print("Alfa: " + str(i))
             print("Emiter X: " + str((r * cos(radians(i)))))
             print("Emiter Y: " + str((r * sin(radians(i)))))
 
-            for x in range(0,detectorNumber):
+            for x in range(0, detectorNumber):
                 detectorX = r * cos(radians(i) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1)))
                 detectorY = r * sin(radians(i) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1)))
 
