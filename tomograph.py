@@ -2,6 +2,10 @@ import sys
 from PyQt5 import QtWidgets, QtCore
 from PyQt5 import QtGui
 from math import *
+from skimage.draw import line
+import numpy as np
+from sklearn.preprocessing import normalize
+import cv2
 
 
 class Window(QtWidgets.QMainWindow):
@@ -36,6 +40,8 @@ class Window(QtWidgets.QMainWindow):
         self.setGeometry(200, 200, 1000, 735)
         self.setWindowTitle("Tomograph")
         self.initGUI()
+
+        self.imgAs2DArray = []
 
     def initGUI(self):
 
@@ -139,34 +145,78 @@ class Window(QtWidgets.QMainWindow):
         angle = self.s3.value()
         self.slider_label3.setText(angle.__str__()+"°")
 
-    def start(self):
+    def normalizeArray(self,arr, max):
+        for x in range(0, len(arr)):
+            try:
+                arr[x] = arr[x] / max
+                if isnan(arr[x]):
+                    arr[x] = 0
+            except:
+                arr[x] = 0
 
+        return arr
+
+    def start(self):
         step = self.s1.value()
         detectorNumber = self.s2.value()
         l = self.s3.value()
         r = 300
 
+
         for i in range(0, 360, step):
-            print("Alfa: " + str(i))
-            print("Emiter X: " + str((r * cos(radians(i)))))
-            print("Emiter Y: " + str((r * sin(radians(i)))))
+
+            emiterX = (r * cos(radians(i))) + 150
+            emiterY = (r * sin(radians(i))) + 150
+
+            #print("Alfa: " + str(i))
+            #print("Emiter X: " + str(emiterX))
+            #print("Emiter Y: " + str(emiterY))
+
+            max = 0
+            pixelSumList = []
 
             for x in range(0, detectorNumber):
-                detectorX = r * cos(radians(i) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1)))
-                detectorY = r * sin(radians(i) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1)))
+                detectorX = r * cos(radians(i) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
+                detectorY = r * sin(radians(i) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
 
-                print("Detektor(" + str(x) + ") X: " + str(detectorX))
-                print("Detektor(" + str(x) + ") Y: " + str(detectorY))
+                rr,cc = line(int(emiterX), int(emiterY), int(detectorX), int(detectorY))
 
-        print("Start")
+                pixelsSum = 0
+
+                for i in range(0,len(rr)):
+                    try:
+                        pixel = self.imgAs2DArray[rr[i]][cc[i]]
+                        pixelsSum = pixelsSum + pixel
+                    except:
+                        pixelsSum = pixelsSum + 0
+
+                if pixelsSum > max:
+                    max = pixelsSum
+
+                pixelSumList.append(pixelsSum)
+
+
+            pixelSumList = self.normalizeArray(pixelSumList,max)
+
+            print(pixelSumList)
+
+            #Przenoszenie wynikow na Sinogram
+
+
 
     def choose_file(self):
-        print("Choosed")
         name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File')
         pixmap = QtGui.QPixmap(name[0])
         pixmap = pixmap.scaled(self.image_label1.width(),
                                self.image_label1.height())
         self.image_label1.setPixmap(pixmap)
+        self.imgAs2DArray = cv2.imread(name[0], 0)
+        resized = cv2.resize(self.imgAs2DArray, (300,300), interpolation=cv2.INTER_AREA)
+        self.imgAs2DArray = resized
+
+
+
+
 
 
 def run():
