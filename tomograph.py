@@ -1,6 +1,7 @@
 import sys
 from PyQt5 import QtWidgets, QtCore
 from PyQt5 import QtGui
+from math import *
 
 
 class Window(QtWidgets.QMainWindow):
@@ -84,7 +85,7 @@ class Window(QtWidgets.QMainWindow):
         self.s1.setGeometry(30, 490, 300, 50)
         self.s1.valueChanged.connect(self.valuechange)
 
-        self.s2.setMinimum(1)
+        self.s2.setMinimum(2)
         self.s2.setMaximum(10)
         self.s2.setValue(1)
         self.s2.setTickInterval(1)
@@ -130,7 +131,25 @@ class Window(QtWidgets.QMainWindow):
         self.slider_label3.setText(angle.__str__()+"°")
 
     def start(self):
-        #TODO co się dzieje po naciśnięciu Start
+
+        step = self.s3.value()
+        detectorNumber = self.s2.value()
+        l = self.s3.value()
+        #r = self.image_label1.width()**2 + self.image_label1.height()**2
+        r = 2
+
+        for i in range(0,360,step):
+            print("Alfa: " + str(i))
+            print("Emiter X: " + str((r * cos(radians(i)))))
+            print("Emiter Y: " + str((r * sin(radians(i)))))
+
+            for x in range(0,detectorNumber):
+                detectorX = r * cos(radians(i) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1)))
+                detectorY = r * sin(radians(i) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1)))
+
+                print("Detektor(" + str(x) + ") X: " + str(detectorX))
+                print("Detektor(" + str(x) + ") Y: " + str(detectorY))
+
         print("Start")
 
     def choose_file(self):
@@ -140,6 +159,7 @@ class Window(QtWidgets.QMainWindow):
         pixmap = pixmap.scaled(self.image_label1.width(),
                                self.image_label1.height())
         self.image_label1.setPixmap(pixmap)
+
 
 def run():
     app = QtWidgets.QApplication(sys.argv)
