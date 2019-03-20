@@ -7,7 +7,7 @@ import numpy as np
 import cv2
 import matplotlib.pyplot as plt
 from PIL import Image
-
+from bresenham import bresenham
 
 class Window(QtWidgets.QMainWindow):
 
@@ -96,7 +96,7 @@ class Window(QtWidgets.QMainWindow):
 
         self.s1.setMinimum(1)
         self.s1.setMaximum(360)
-        self.s1.setValue(20)
+        self.s1.setValue(1)
         self.s1.setTickInterval(10)
         self.s1.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.s1.setGeometry(30, 490, 300, 50)
@@ -104,7 +104,7 @@ class Window(QtWidgets.QMainWindow):
 
         self.s2.setMinimum(100)
         self.s2.setMaximum(1000)
-        self.s2.setValue(200)
+        self.s2.setValue(180)
         self.s2.setTickInterval(100)
         self.s2.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.s2.setGeometry(350, 490, 300, 50)
@@ -112,7 +112,7 @@ class Window(QtWidgets.QMainWindow):
 
         self.s3.setMinimum(1)
         self.s3.setMaximum(360)
-        self.s3.setValue(20)
+        self.s3.setValue(110)
         self.s3.setTickInterval(10)
         self.s3.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.s3.setGeometry(670, 490, 300, 50)
@@ -163,16 +163,12 @@ class Window(QtWidgets.QMainWindow):
         detectorNumber = self.s2.value()
         l = self.s3.value()
         r = 300
-        a = 0
 
-        for i in range(0, 360, step):
+        for i in np.arange(0, 180, step):
 
             emiterX = (r * cos(radians(i))) + 150
             emiterY = (r * sin(radians(i))) + 150
 
-            #print("Alfa: " + str(i))
-            #print("Emiter X: " + str(emiterX))
-            #print("Emiter Y: " + str(emiterY))
 
             max = 0
             pixelSumList = []
@@ -181,13 +177,14 @@ class Window(QtWidgets.QMainWindow):
                 detectorX = r * cos(radians(i) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
                 detectorY = r * sin(radians(i) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
 
+
                 rr,cc = line(int(emiterX), int(emiterY), int(detectorX), int(detectorY))
 
                 pixelsSum = 0
 
-                for i in range(0,len(rr)):
+                for z in range(0,len(rr)):
                     try:
-                        pixel = self.imgAs2DArray[rr[i]][cc[i]]
+                        pixel = self.imgAs2DArray[cc[z]][rr[z]]
                         pixelsSum = pixelsSum + pixel
                     except:
                         pixelsSum = pixelsSum + 0
@@ -200,20 +197,18 @@ class Window(QtWidgets.QMainWindow):
 
             pixelSumList = self.normalizeArray(pixelSumList,max)
 
-            #print(pixelSumList)
-
             #Przenoszenie wynikow na Sinogram
             self.array.append(pixelSumList)
 
-        a += 1
-        print(self.array)
-        print(len(self.array))
+
+        #print(self.array)
         self.array = np.array(self.array)
         img = Image.fromarray(self.array * 255)
-
         img = img.convert("L")
-
+        img = img.rotate(90)
         img.save('test.png')
+
+
 
     def choose_file(self):
         name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File')
@@ -224,7 +219,6 @@ class Window(QtWidgets.QMainWindow):
         self.imgAs2DArray = cv2.imread(name[0], 0)
         resized = cv2.resize(self.imgAs2DArray, (300,300), interpolation=cv2.INTER_AREA)
         self.imgAs2DArray = resized
-
 
 
 
