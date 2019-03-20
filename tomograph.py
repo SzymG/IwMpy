@@ -4,8 +4,9 @@ from PyQt5 import QtGui
 from math import *
 from skimage.draw import line
 import numpy as np
-from sklearn.preprocessing import normalize
 import cv2
+import matplotlib.pyplot as plt
+from PIL import Image
 
 
 class Window(QtWidgets.QMainWindow):
@@ -42,6 +43,7 @@ class Window(QtWidgets.QMainWindow):
         self.initGUI()
 
         self.imgAs2DArray = []
+        self.array = []
 
     def initGUI(self):
 
@@ -100,10 +102,10 @@ class Window(QtWidgets.QMainWindow):
         self.s1.setGeometry(30, 490, 300, 50)
         self.s1.valueChanged.connect(self.valuechange)
 
-        self.s2.setMinimum(2)
-        self.s2.setMaximum(10)
-        self.s2.setValue(1)
-        self.s2.setTickInterval(1)
+        self.s2.setMinimum(100)
+        self.s2.setMaximum(1000)
+        self.s2.setValue(200)
+        self.s2.setTickInterval(100)
         self.s2.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.s2.setGeometry(350, 490, 300, 50)
         self.s2.valueChanged.connect(self.valuechange_2)
@@ -161,7 +163,7 @@ class Window(QtWidgets.QMainWindow):
         detectorNumber = self.s2.value()
         l = self.s3.value()
         r = 300
-
+        a = 0
 
         for i in range(0, 360, step):
 
@@ -198,11 +200,20 @@ class Window(QtWidgets.QMainWindow):
 
             pixelSumList = self.normalizeArray(pixelSumList,max)
 
-            print(pixelSumList)
+            #print(pixelSumList)
 
             #Przenoszenie wynikow na Sinogram
+            self.array.append(pixelSumList)
 
+        a += 1
+        print(self.array)
+        print(len(self.array))
+        self.array = np.array(self.array)
+        img = Image.fromarray(self.array * 255)
 
+        img = img.convert("L")
+
+        img.save('test.png')
 
     def choose_file(self):
         name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File')
