@@ -5,9 +5,9 @@ from math import *
 from skimage.draw import line
 import numpy as np
 import cv2
-import matplotlib.pyplot as plt
 from PIL import Image
-from bresenham import bresenham
+from skimage.transform import iradon
+from matplotlib import pyplot as plt
 
 class Window(QtWidgets.QMainWindow):
 
@@ -42,7 +42,7 @@ class Window(QtWidgets.QMainWindow):
         self.setWindowTitle("Tomograph")
         self.initGUI()
 
-        self.imgAs2DArray = []
+        self.imgAs2DArray = 0
         self.array = []
 
     def initGUI(self):
@@ -162,20 +162,23 @@ class Window(QtWidgets.QMainWindow):
         step = self.s1.value()
         detectorNumber = self.s2.value()
         l = self.s3.value()
-        r = 300
+        r = (sqrt(2)*300)/2
 
-        for i in np.arange(0, 180, step):
+        steps = int(180/step)
+        sinogram = np.zeros((steps, detectorNumber, 3))
 
-            emiterX = (r * cos(radians(i))) + 150
-            emiterY = (r * sin(radians(i))) + 150
+        for i in range(steps):
+            angle = i * step
+            emiterX = (r * cos(radians(angle))) + 150
+            emiterY = (r * sin(radians(angle))) + 150
 
 
-            max = 0
-            pixelSumList = []
+
 
             for x in range(0, detectorNumber):
-                detectorX = r * cos(radians(i) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
-                detectorY = r * sin(radians(i) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
+                detectorX = r * cos(radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
+                detectorY = r * sin(radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
+
 
 
                 rr,cc = line(int(emiterX), int(emiterY), int(detectorX), int(detectorY))
@@ -183,30 +186,28 @@ class Window(QtWidgets.QMainWindow):
                 pixelsSum = 0
 
                 for z in range(0,len(rr)):
-                    try:
-                        pixel = self.imgAs2DArray[cc[z]][rr[z]]
-                        pixelsSum = pixelsSum + pixel
-                    except:
-                        pixelsSum = pixelsSum + 0
-
-                if pixelsSum > max:
-                    max = pixelsSum
-
-                pixelSumList.append(pixelsSum)
+                    point = (rr[z], cc[z])
+                    if (point[0] >= 0 and point[0] < 300 and
+                            point[1] >= 0 and point[1] < 300):
+                        pixelsSum += self.imgAs2DArray[point[1]][point[0]]
 
 
-            pixelSumList = self.normalizeArray(pixelSumList,max)
-
-            #Przenoszenie wynikow na Sinogram
-            self.array.append(pixelSumList)
+                sinogram[i][x] += [pixelsSum , pixelsSum, pixelsSum]
 
 
-        #print(self.array)
-        self.array = np.array(self.array)
-        img = Image.fromarray(self.array * 255)
-        img = img.convert("L")
-        img = img.rotate(90)
-        img.save('test.png')
+
+        sinMax = np.amax(sinogram)
+        print(sinMax)
+        sinogram = sinogram / sinMax
+        print(sinogram)
+
+        plt.imshow(sinogram)
+        plt.show()
+
+
+        print('DONE')
+        self.array = []
+
 
 
 
