@@ -6,8 +6,9 @@ from skimage.draw import line
 import numpy as np
 import cv2
 from PIL import Image
-from skimage.transform import iradon
 from matplotlib import pyplot as plt
+from scipy.misc import toimage
+from PIL.ImageQt import ImageQt
 
 class Window(QtWidgets.QMainWindow):
 
@@ -147,24 +148,20 @@ class Window(QtWidgets.QMainWindow):
         angle = self.s3.value()
         self.slider_label3.setText(angle.__str__()+"°")
 
-    def normalizeArray(self,arr, max):
-        for x in range(0, len(arr)):
-            try:
-                arr[x] = arr[x] / max
-                if isnan(arr[x]):
-                    arr[x] = 0
-            except:
-                arr[x] = 0
-
+    def normalizeArray(self,arr):
+        arrMax = np.amax(arr)
+        arr = arr / arrMax
         return arr
 
-    def start(self):
+
+    def generateSinogram(self):
+
         step = self.s1.value()
         detectorNumber = self.s2.value()
         l = self.s3.value()
-        r = (sqrt(2)*300)/2
+        r = (sqrt(2) * 300) / 2
 
-        steps = int(180/step)
+        steps = int(180 / step)
         sinogram = np.zeros((steps, detectorNumber, 3))
 
         for i in range(steps):
@@ -172,41 +169,44 @@ class Window(QtWidgets.QMainWindow):
             emiterX = (r * cos(radians(angle))) + 150
             emiterY = (r * sin(radians(angle))) + 150
 
-
-
-
             for x in range(0, detectorNumber):
-                detectorX = r * cos(radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
-                detectorY = r * sin(radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
+                detectorX = r * cos(
+                    radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
+                detectorY = r * sin(
+                    radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
 
-
-
-                rr,cc = line(int(emiterX), int(emiterY), int(detectorX), int(detectorY))
+                rr, cc = line(int(emiterX), int(emiterY), int(detectorX), int(detectorY))
 
                 pixelsSum = 0
 
-                for z in range(0,len(rr)):
+                for z in range(0, len(rr)):
                     point = (rr[z], cc[z])
                     if (point[0] >= 0 and point[0] < 300 and
                             point[1] >= 0 and point[1] < 300):
                         pixelsSum += self.imgAs2DArray[point[1]][point[0]]
 
-
-                sinogram[i][x] += [pixelsSum , pixelsSum, pixelsSum]
-
+                sinogram[i][x] += [pixelsSum, pixelsSum, pixelsSum]
 
 
-        sinMax = np.amax(sinogram)
-        print(sinMax)
-        sinogram = sinogram / sinMax
-        print(sinogram)
+        sinogram = self.normalizeArray(sinogram)
 
-        plt.imshow(sinogram)
-        plt.show()
 
+
+
+        sinogram = toimage(sinogram)
+        qim = ImageQt(sinogram)
+
+        pixMap = QtGui.QPixmap.fromImage(qim)
+        pixMap = pixMap.scaled(self.image_label1.width(),self.image_label1.height())
+        pixMap = pixMap.transformed(QtGui.QTransform().rotate(90))
+
+        self.image_label2.setPixmap(pixMap)
 
         print('DONE')
         self.array = []
+
+    def start(self):
+        self.generateSinogram()
 
 
 
