@@ -5,6 +5,7 @@ from math import *
 from skimage.draw import line
 import numpy as np
 import cv2
+from scipy.fftpack import fft, ifft, fftfreq
 from PIL import Image
 from scipy.misc import toimage
 from PIL.ImageQt import ImageQt
@@ -14,6 +15,7 @@ class Window(QtWidgets.QMainWindow):
 
     def __init__(self):
         super(Window, self).__init__()
+        self.sinogram = np.zeros((1, 1, 1))
         self.label = QtWidgets.QLabel(self)
         self.label1 = QtWidgets.QLabel(self)
         self.label2 = QtWidgets.QLabel(self)
@@ -161,20 +163,48 @@ class Window(QtWidgets.QMainWindow):
         angle = self.s3.value()
         self.slider_label3.setText(angle.__str__()+"°")
 
-    def normalizeArray(self,arr):
+    def normalizeArray(self, arr):
         arrMax = np.amax(arr)
         arr = arr / arrMax
         return arr
+
+    def sinogram_circle_to_square(self, sinogram):
+        diagonal = int(np.ceil(np.sqrt(2) * sinogram.shape[0]))
+        pad = diagonal - sinogram.shape[0]
+        old_center = sinogram.shape[0] // 2
+        new_center = diagonal // 2
+        pad_before = new_center - old_center
+        pad_width = ((pad_before, pad - pad_before), (0, 0))
+        return np.pad(sinogram, pad_width, mode='constant', constant_values=0)
+
+    def make_2_from_3(self, img):
+        s = (img.shape[0], img.shape[1])
+        new = np.zeros(s)
+        for i in range(img.shape[0]):
+            for j in range(img.shape[1]):
+                new[i][j] = max(img[i][j])
+
+        return new
+
+    def iradon(self):
+
+        #recSinImg = toimage(reconstructed)
+
+        '''qim = ImageQt(recSinImg)
+        pixMap = QtGui.QPixmap.fromImage(qim)
+        pixMap = pixMap.scaled(self.image_label3.width(), self.image_label3.height())
+        pixMap = pixMap.transformed(QtGui.QTransform().rotate(180))
+        self.image_label3.setPixmap(pixMap)'''
 
     def generateSinogram(self):
 
         step = self.s1.value()
         detectorNumber = self.s2.value()
         l = self.s3.value()
-        r = (sqrt(2) * 300) / 2
+        r = (sqrt(2) * self.imgAs2DArray.shape[0]) / 2
 
         steps = int(180 / step)
-        sinogram = np.zeros((steps, detectorNumber, 3))
+        self.sinogram = np.zeros((steps, detectorNumber, 3))
 
         show_progress = not self.b2.isChecked()
 
@@ -186,14 +216,14 @@ class Window(QtWidgets.QMainWindow):
             print(((i+1)*step).__str__())
 
             angle = i * step
-            emiterX = (r * cos(radians(angle))) + 150
-            emiterY = (r * sin(radians(angle))) + 150
+            emiterX = (r * cos(radians(angle))) + (self.imgAs2DArray.shape[0] / 2)
+            emiterY = (r * sin(radians(angle))) + (self.imgAs2DArray.shape[1] / 2)
 
             for x in range(0, detectorNumber):
                 detectorX = r * cos(
-                    radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
+                    radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + (self.imgAs2DArray.shape[0] / 2)
                 detectorY = r * sin(
-                    radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
+                    radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + (self.imgAs2DArray.shape[1] / 2)
 
                 rr, cc = line(int(emiterX), int(emiterY), int(detectorX), int(detectorY))
 
@@ -201,28 +231,31 @@ class Window(QtWidgets.QMainWindow):
 
                 for z in range(0, len(rr)):
                     point = (rr[z], cc[z])
-                    if (0 <= point[0] < 300 and
-                            0 <= point[1] < 300):
+                    if (0 <= point[0] < self.imgAs2DArray.shape[1] and
+                            0 <= point[1] < self.imgAs2DArray.shape[0]):
                         pixelsSum += self.imgAs2DArray[point[1]][point[0]]
 
-                sinogram[i][x] += [pixelsSum, pixelsSum, pixelsSum]
+                self.sinogram[i][x] = [pixelsSum, pixelsSum, pixelsSum]
 
             if not show_progress:
                 QtGui.QGuiApplication.processEvents()
-                self.set_sinogram_on_label(sinogram)
+                self.sinogram = self.normalizeArray(self.sinogram)
+                self.set_sinogram_on_label(self.sinogram)
 
-        self.set_sinogram_on_label(sinogram)
+        self.set_sinogram_on_label(self.sinogram)
+
+        sinImg = toimage(self.sinogram)
+        sinImg.save("sin.jpg")
 
         self.progress_label.setText("")
 
         print('DONE')
         self.array = []
 
+
     def set_sinogram_on_label(self, sin):
 
         sinogram = sin
-        sinogram = self.normalizeArray(sinogram)
-
         sinogram = toimage(sinogram)
         qim = ImageQt(sinogram)
 
@@ -232,14 +265,13 @@ class Window(QtWidgets.QMainWindow):
 
         self.image_label2.setPixmap(pixMap)
 
-    def generateOutput(self):
-        print("generuje output")
+        return sinogram
 
     def start(self):
         self.btn_start.setEnabled(False)
         self.b2.setEnabled(False)
         self.generateSinogram()
-        self.generateOutput()
+        self.iradon()
         self.btn_start.setEnabled(True)
         self.b2.setEnabled(True)
 
@@ -250,8 +282,8 @@ class Window(QtWidgets.QMainWindow):
                                self.image_label1.height())
         self.image_label1.setPixmap(pixmap)
         self.imgAs2DArray = cv2.imread(name[0], 0)
-        resized = cv2.resize(self.imgAs2DArray, (300, 300), interpolation=cv2.INTER_AREA)
-        self.imgAs2DArray = resized
+        #resized = cv2.resize(self.imgAs2DArray, (300, 300), interpolation=cv2.INTER_AREA)
+        #self.imgAs2DArray = resized
         self.btn_start.setEnabled(True)
 
 def run():
