@@ -166,12 +166,65 @@ class Window(QtWidgets.QMainWindow):
         arr = arr / arrMax
         return arr
 
+    def _sinogram_circle_to_square(self, sinogram):
+        diagonal = int(np.ceil(np.sqrt(2) * sinogram.shape[0]))
+        pad = diagonal - sinogram.shape[0]
+        old_center = sinogram.shape[0] // 2
+        new_center = diagonal // 2
+        pad_before = new_center - old_center
+        pad_width = ((pad_before, pad - pad_before), (0, 0))
+        return np.pad(sinogram, pad_width, mode='constant', constant_values=0)
+
+    def inverseRadonTransform(self, radon_image):
+        print(radon_image)
+
+        n = radon_image.shape[0]
+        m = radon_image.shape[1]
+        print(str(n) + " : " + str(m))
+
+        theta = np.linspace(0, 180, n, endpoint=False)
+
+        if len(theta) != radon_image.shape[1]:
+            print('Źle')
+
+        output_size = n
+        radon_image = self._sinogram_circle_to_square(radon_image)
+
+        th = (np.pi / 180.0) * theta
+
+        reconstructed = np.zeros((output_size, output_size))
+        mid_index = radon_image.shape[0] // 2
+
+        [X, Y] = np.mgrid[0:output_size, 0:output_size]
+        xpr = X - int(output_size) // 2
+        ypr = Y - int(output_size) // 2
+
+        for i in range(len(theta)):
+            t = ypr * np.cos(th[i]) - xpr * np.sin(th[i])
+            x = np.arange(radon_image.shape[0]) - mid_index
+            backprojected = np.interp(t, x, radon_image[:, i], left=0, right=0)
+            reconstructed += backprojected
+
+        radius = output_size // 2
+        reconstruction_circle = (xpr ** 2 + ypr ** 2) <= radius ** 2
+        reconstructed[~reconstruction_circle] = 0
+
+        reconstructed = reconstructed * np.pi / (2* len(th))
+
+        recSinImg = toimage(reconstructed)
+
+        qim = ImageQt(recSinImg)
+        pixMap = QtGui.QPixmap.fromImage(qim)
+        pixMap = pixMap.scaled(self.image_label3.width(), self.image_label3.height())
+        pixMap = pixMap.transformed(QtGui.QTransform().rotate(180))
+        self.image_label3.setPixmap(pixMap)
+
     def generateSinogram(self):
 
         step = self.s1.value()
         detectorNumber = self.s2.value()
         l = self.s3.value()
-        r = (sqrt(2) * 300) / 2
+        r = (sqrt(2) * self.imgAs2DArray.shape[0]) / 2
 
         steps = int(180 / step)
         sinogram = np.zeros((steps, detectorNumber, 3))
@@ -186,14 +239,14 @@ class Window(QtWidgets.QMainWindow):
             print(((i+1)*step).__str__())
 
             angle = i * step
-            emiterX = (r * cos(radians(angle))) + 150
-            emiterY = (r * sin(radians(angle))) + 150
+            emiterX = (r * cos(radians(angle))) + (self.imgAs2DArray.shape[0] / 2)
+            emiterY = (r * sin(radians(angle))) + (self.imgAs2DArray.shape[1] / 2)
 
             for x in range(0, detectorNumber):
                 detectorX = r * cos(
-                    radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
+                    radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + (self.imgAs2DArray.shape[0] / 2)
                 detectorY = r * sin(
-                    radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + 150
+                    radians(angle) + pi - (radians(l) / 2) + x * (radians(l) / (detectorNumber - 1))) + (self.imgAs2DArray.shape[1] / 2)
 
                 rr, cc = line(int(emiterX), int(emiterY), int(detectorX), int(detectorY))
 
@@ -201,8 +254,8 @@ class Window(QtWidgets.QMainWindow):
 
                 for z in range(0, len(rr)):
                     point = (rr[z], cc[z])
-                    if (0 <= point[0] < 300 and
-                            0 <= point[1] < 300):
+                    if (point[0] >= 0 and point[0] < self.imgAs2DArray.shape[1] and
+                            point[1] >= 0 and point[1] < self.imgAs2DArray.shape[0]):
                         pixelsSum += self.imgAs2DArray[point[1]][point[0]]
 
                 sinogram[i][x] += [pixelsSum, pixelsSum, pixelsSum]
@@ -213,10 +266,16 @@ class Window(QtWidgets.QMainWindow):
 
         self.set_sinogram_on_label(sinogram)
 
+        sinImg = toimage(sinogram)
+        sinImg.save("sin.jpg")
+        radon_image = cv2.imread('sin.jpg', 0)
+        self.inverseRadonTransform(radon_image)
+
         self.progress_label.setText("")
 
         print('DONE')
         self.array = []
+
 
     def set_sinogram_on_label(self, sin):
 
@@ -232,6 +291,9 @@ class Window(QtWidgets.QMainWindow):
 
         self.image_label2.setPixmap(pixMap)
 
+        return sinogram
+
+
     def generateOutput(self):
         print("generuje output")
 
@@ -239,7 +301,7 @@ class Window(QtWidgets.QMainWindow):
         self.btn_start.setEnabled(False)
         self.b2.setEnabled(False)
         self.generateSinogram()
-        self.generateOutput()
+        #self.inverseRadonTransform(sinogram)
         self.btn_start.setEnabled(True)
         self.b2.setEnabled(True)
 
@@ -250,8 +312,8 @@ class Window(QtWidgets.QMainWindow):
                                self.image_label1.height())
         self.image_label1.setPixmap(pixmap)
         self.imgAs2DArray = cv2.imread(name[0], 0)
-        resized = cv2.resize(self.imgAs2DArray, (300, 300), interpolation=cv2.INTER_AREA)
-        self.imgAs2DArray = resized
+        #resized = cv2.resize(self.imgAs2DArray, (300, 300), interpolation=cv2.INTER_AREA)
+        #self.imgAs2DArray = resized
         self.btn_start.setEnabled(True)
 
 def run():
