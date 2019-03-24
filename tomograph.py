@@ -47,6 +47,9 @@ class Window(QtWidgets.QMainWindow):
         self.imgAs2DArray = 0
         self.array = []
 
+        self.sinogram = 0
+
+
     def initGUI(self):
 
         self.btn_start = QtWidgets.QPushButton("Start", self)
@@ -227,7 +230,7 @@ class Window(QtWidgets.QMainWindow):
         r = (sqrt(2) * self.imgAs2DArray.shape[0]) / 2
 
         steps = int(180 / step)
-        sinogram = np.zeros((steps, detectorNumber, 3))
+        self.sinogram = np.zeros((steps, detectorNumber, 3))
 
         show_progress = not self.b2.isChecked()
 
@@ -258,15 +261,15 @@ class Window(QtWidgets.QMainWindow):
                             point[1] >= 0 and point[1] < self.imgAs2DArray.shape[0]):
                         pixelsSum += self.imgAs2DArray[point[1]][point[0]]
 
-                sinogram[i][x] += [pixelsSum, pixelsSum, pixelsSum]
+                        self.sinogram[i][x] += [pixelsSum, pixelsSum, pixelsSum]
 
             if not show_progress:
                 QtGui.QGuiApplication.processEvents()
-                self.set_sinogram_on_label(sinogram)
+                self.set_sinogram_on_label(self.sinogram)
 
-        self.set_sinogram_on_label(sinogram)
+        self.set_sinogram_on_label(self.sinogram)
 
-        sinImg = toimage(sinogram)
+        sinImg = toimage(self.sinogram)
         sinImg.save("sin.jpg")
         radon_image = cv2.imread('sin.jpg', 0)
         self.inverseRadonTransform(radon_image)
