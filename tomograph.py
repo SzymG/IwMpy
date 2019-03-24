@@ -242,6 +242,7 @@ class Window(QtWidgets.QMainWindow):
                 self.sinogram = self.normalizeArray(self.sinogram)
                 self.set_sinogram_on_label(self.sinogram)
 
+        self.sinogram = self.normalizeArray(self.sinogram)
         self.set_sinogram_on_label(self.sinogram)
 
         sinImg = toimage(self.sinogram)
