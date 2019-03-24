@@ -6,9 +6,9 @@ from skimage.draw import line
 import numpy as np
 import cv2
 from PIL import Image
-from matplotlib import pyplot as plt
 from scipy.misc import toimage
 from PIL.ImageQt import ImageQt
+
 
 class Window(QtWidgets.QMainWindow):
 
@@ -19,6 +19,7 @@ class Window(QtWidgets.QMainWindow):
         self.label2 = QtWidgets.QLabel(self)
         self.label3 = QtWidgets.QLabel(self)
         self.label4 = QtWidgets.QLabel(self)
+        self.progress_label = QtWidgets.QLabel(self)
 
         self.b2 = QtWidgets.QCheckBox(self)
 
@@ -48,20 +49,29 @@ class Window(QtWidgets.QMainWindow):
 
     def initGUI(self):
 
-        btn_start = QtWidgets.QPushButton("Start", self)
-        btn_start.setGeometry(400, 660, 210, 50)
-        btn_start.setStyleSheet("font-size: 18px;")
-        btn_start.clicked.connect(self.start)
+        self.btn_start = QtWidgets.QPushButton("Start", self)
+        self.btn_start.setGeometry(400, 660, 210, 50)
+        self.btn_start.setStyleSheet("font-size: 18px;")
+        self.btn_start.clicked.connect(self.start)
+        self.btn_start.setEnabled(False)
 
-        btn_choose = QtWidgets.QPushButton("Wybierz obraz wejściowy", self)
-        btn_choose.setGeometry(30, 25, 350, 50)
-        btn_choose.setStyleSheet("font-size: 18px;")
-        btn_choose.clicked.connect(self.choose_file)
+        self.btn_choose = QtWidgets.QPushButton("Wybierz obraz wejściowy", self)
+        self.btn_choose.setGeometry(30, 25, 300, 50)
+        self.btn_choose.setStyleSheet("font-size: 18px;")
+        self.btn_choose.clicked.connect(self.choose_file)
 
-        self.b2.setGeometry(920, 25, 320, 50)
+        self.btn_filter = QtWidgets.QPushButton("Filtruj", self)
+        self.btn_filter.setGeometry(670, 25, 300, 50)
+        self.btn_filter.setStyleSheet("font-size: 18px;")
+        self.btn_filter.clicked.connect(self.filter_output)
 
-        self.label4.setGeometry(800, 25, 100, 50)
-        self.label4.setText("Filtrowanie")
+        self.b2.setGeometry(600, 25, 320, 50)
+
+        self.progress_label.setGeometry(120, 660, 210, 50)
+        self.progress_label.setStyleSheet("font-size: 18px;")
+
+        self.label4.setGeometry(390, 25, 200, 50)
+        self.label4.setText("Pokazywanie iteracyjne")
         self.label4.setStyleSheet("font-size: 18px;")
 
         self.label1.setGeometry(120, 545, 220, 100)
@@ -113,7 +123,7 @@ class Window(QtWidgets.QMainWindow):
 
         self.s3.setMinimum(1)
         self.s3.setMaximum(360)
-        self.s3.setValue(110)
+        self.s3.setValue(160)
         self.s3.setTickInterval(10)
         self.s3.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.s3.setGeometry(670, 490, 300, 50)
@@ -135,6 +145,9 @@ class Window(QtWidgets.QMainWindow):
         self.slider_label3.setAlignment(QtCore.Qt.AlignCenter)
 
         self.show()
+
+    def filter_output(self):
+        print("filtruje")
 
     def valuechange(self):
         angle = self.s1.value()
@@ -164,7 +177,15 @@ class Window(QtWidgets.QMainWindow):
         steps = int(180 / step)
         sinogram = np.zeros((steps, detectorNumber, 3))
 
+        show_progress = not self.b2.isChecked()
+
         for i in range(steps):
+
+            if show_progress:
+                QtGui.QGuiApplication.processEvents()
+                self.progress_label.setText("Progres: "+(round(100*((i+1)*step)/180)).__str__()+"%")
+            print(((i+1)*step).__str__())
+
             angle = i * step
             emiterX = (r * cos(radians(angle))) + 150
             emiterY = (r * sin(radians(angle))) + 150
@@ -181,35 +202,43 @@ class Window(QtWidgets.QMainWindow):
 
                 for z in range(0, len(rr)):
                     point = (rr[z], cc[z])
-                    if (point[0] >= 0 and point[0] < 300 and
-                            point[1] >= 0 and point[1] < 300):
+                    if (0 <= point[0] < 300 and
+                            0 <= point[1] < 300):
                         pixelsSum += self.imgAs2DArray[point[1]][point[0]]
 
                 sinogram[i][x] += [pixelsSum, pixelsSum, pixelsSum]
 
+            if not show_progress:
+                QtGui.QGuiApplication.processEvents()
+                self.set_sinogram_on_label(sinogram)
 
+        self.set_sinogram_on_label(sinogram)
+
+        self.progress_label.setText("")
+
+        print('DONE')
+        self.array = []
+
+    def set_sinogram_on_label(self, sin):
+
+        sinogram = sin
         sinogram = self.normalizeArray(sinogram)
-
-
-
 
         sinogram = toimage(sinogram)
         qim = ImageQt(sinogram)
 
         pixMap = QtGui.QPixmap.fromImage(qim)
-        pixMap = pixMap.scaled(self.image_label1.width(),self.image_label1.height())
-        pixMap = pixMap.transformed(QtGui.QTransform().rotate(90))
+        pixMap = pixMap.scaled(self.image_label1.width(), self.image_label1.height())
+        pixMap = pixMap.transformed(QtGui.QTransform().rotate(270))
 
         self.image_label2.setPixmap(pixMap)
 
-        print('DONE')
-        self.array = []
-
     def start(self):
+        self.btn_start.setEnabled(False)
+        self.b2.setEnabled(False)
         self.generateSinogram()
-
-
-
+        self.btn_start.setEnabled(True)
+        self.b2.setEnabled(True)
 
     def choose_file(self):
         name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File')
@@ -218,12 +247,9 @@ class Window(QtWidgets.QMainWindow):
                                self.image_label1.height())
         self.image_label1.setPixmap(pixmap)
         self.imgAs2DArray = cv2.imread(name[0], 0)
-        resized = cv2.resize(self.imgAs2DArray, (300,300), interpolation=cv2.INTER_AREA)
+        resized = cv2.resize(self.imgAs2DArray, (300, 300), interpolation=cv2.INTER_AREA)
         self.imgAs2DArray = resized
-
-
-
-
+        self.btn_start.setEnabled(True)
 
 def run():
     app = QtWidgets.QApplication(sys.argv)
