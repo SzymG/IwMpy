@@ -166,7 +166,6 @@ class Window(QtWidgets.QMainWindow):
         arr = arr / arrMax
         return arr
 
-
     def generateSinogram(self):
 
         step = self.s1.value()
@@ -233,10 +232,14 @@ class Window(QtWidgets.QMainWindow):
 
         self.image_label2.setPixmap(pixMap)
 
+    def generateOutput(self):
+        print("generuje output")
+
     def start(self):
         self.btn_start.setEnabled(False)
         self.b2.setEnabled(False)
         self.generateSinogram()
+        self.generateOutput()
         self.btn_start.setEnabled(True)
         self.b2.setEnabled(True)
 
