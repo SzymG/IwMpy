@@ -42,7 +42,7 @@ class Window(QtWidgets.QMainWindow):
         self.s3 = QtWidgets.QSlider(QtCore.Qt.Horizontal, self)
 
         self.window = QtWidgets.QMainWindow()
-        self.setGeometry(200, 200, 1000, 735)
+        self.setGeometry(0, 0, 1000, 735)
         self.setWindowTitle("Tomograph")
         self.initGUI()
 
@@ -186,18 +186,20 @@ class Window(QtWidgets.QMainWindow):
                 if (point[0] >= 0 and point[0] < output.shape[0] and
                         point[1] >= 0 and point[1] < output.shape[1]):
                         try:
-                            pixel = self.sinogram[j][i]
+                            pixel = self.sinogram[i][j]
                             output[x][y] += pixel
                         except:
                             print('exeption')
 
 
             j += 1
-            if j > self.sinogram.shape[0] - 1:
+            if j > self.sinogram.shape[1] - 1:
                 j = 0
                 i += 1
 
-        o_img = toimage(output)
+
+        newOut = self.normalizeArray(output)
+        o_img = toimage(newOut)
         o_img.save("output.jpg")
 
         qim = ImageQt(o_img)
@@ -207,14 +209,14 @@ class Window(QtWidgets.QMainWindow):
 
     def generateSinogram(self):
 
-        self.imgAs2DArray = cv2.imread("Kwadraty2.jpg")
+        #self.imgAs2DArray = cv2.imread("Kwadraty2.jpg")
 
         imgSize = (len(self.imgAs2DArray), len(self.imgAs2DArray[0]), len(self.imgAs2DArray[0][0]))
 
         step = self.s1.value()
         detectorNumber = self.s2.value()
         l = self.s3.value()
-        r = imgSize[0] * (2 ** 0.5) / 2
+        r = sqrt((imgSize[0] / 2)**2 + (imgSize[1] / 2)**2)
 
         steps = int(180 / step)
         self.sinogram = np.zeros((steps, detectorNumber, 3))
