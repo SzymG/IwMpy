@@ -5,10 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="756bdf9a-110b-4435-8200-15a5fcd23d90" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/sin.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/sin.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tomograph.py" beforeDir="false" afterPath="$PROJECT_DIR$/tomograph.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -46,12 +43,12 @@
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="Python Console" value="96" />
-          <entry key="py" value="5769" />
+          <entry key="py" value="5777" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="Python" value="5865" />
+          <entry key="Python" value="5873" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.vcs.git.usages">
@@ -69,12 +66,12 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tomograph.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="290">
-              <caret line="117" column="45" lean-forward="true" selection-start-line="117" selection-start-column="45" selection-end-line="117" selection-end-column="45" />
+            <state relative-caret-position="-544">
+              <caret line="202" column="18" lean-forward="true" selection-start-line="202" selection-start-column="18" selection-end-line="202" selection-end-column="18" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
-                <marker date="1553529368722" expanded="true" signature="6405:6634" ph="..." />
-                <marker date="1553529368722" expanded="true" signature="8151:8498" ph="..." />
+                <marker date="1553529413050" expanded="true" signature="6408:6637" ph="..." />
+                <marker date="1553529413050" expanded="true" signature="8154:8501" ph="..." />
               </folding>
             </state>
           </provider>
@@ -527,12 +524,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tomograph.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="290">
-          <caret line="117" column="45" lean-forward="true" selection-start-line="117" selection-start-column="45" selection-end-line="117" selection-end-column="45" />
+        <state relative-caret-position="-544">
+          <caret line="202" column="18" lean-forward="true" selection-start-line="202" selection-start-column="18" selection-end-line="202" selection-end-column="18" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
-            <marker date="1553529368722" expanded="true" signature="6405:6634" ph="..." />
-            <marker date="1553529368722" expanded="true" signature="8151:8498" ph="..." />
+            <marker date="1553529413050" expanded="true" signature="6408:6637" ph="..." />
+            <marker date="1553529413050" expanded="true" signature="8154:8501" ph="..." />
           </folding>
         </state>
       </provider>

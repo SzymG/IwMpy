@@ -187,6 +187,7 @@ class Window(QtWidgets.QMainWindow):
         i = 0
         j = 0
 
+        step = self.s1.value()/10
         show_progress = not self.b2.isChecked()
 
         for rr,cc in zip(self.rrs, self.ccs):
@@ -204,7 +205,7 @@ class Window(QtWidgets.QMainWindow):
             if j > self.sinogram.shape[1] - 1:
 
                 QtGui.QGuiApplication.processEvents()
-                self.progress_label.setText("Progres: " + (round((100*(i/180))).__str__()) + "%")
+                self.progress_label.setText("Progres: " + (round(100*((i+1)*step)/180).__str__()) + "%")
 
                 print((100*(i/180)).__str__())
                 j = 0
