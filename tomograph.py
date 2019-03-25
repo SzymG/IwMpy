@@ -8,8 +8,6 @@ import cv2
 from PIL import Image
 from scipy.misc import toimage
 from PIL.ImageQt import ImageQt
-from matplotlib import pyplot as plt
-from skimage.io import imread
 
 
 class Window(QtWidgets.QMainWindow):
@@ -113,9 +111,9 @@ class Window(QtWidgets.QMainWindow):
         self.image_label3.setStyleSheet("border: 1px solid #000000;")
 
         self.s1.setMinimum(1)
-        self.s1.setMaximum(360)
-        self.s1.setValue(1)
-        self.s1.setTickInterval(10)
+        self.s1.setMaximum(20)
+        self.s1.setValue(10)
+        self.s1.setTickInterval(1)
         self.s1.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.s1.setGeometry(30, 490, 300, 50)
         self.s1.valueChanged.connect(self.valuechange)
@@ -130,7 +128,7 @@ class Window(QtWidgets.QMainWindow):
 
         self.s3.setMinimum(1)
         self.s3.setMaximum(360)
-        self.s3.setValue(100)
+        self.s3.setValue(180)
         self.s3.setTickInterval(10)
         self.s3.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.s3.setGeometry(670, 490, 300, 50)
@@ -138,7 +136,7 @@ class Window(QtWidgets.QMainWindow):
 
         self.slider_label1.setGeometry(210, 570, 50, 50)
         self.slider_label1.setStyleSheet("border: 1px solid #000000;")
-        self.slider_label1.setText(self.s1.value().__str__()+"°")
+        self.slider_label1.setText((self.s1.value()/10).__str__()+"°")
         self.slider_label1.setAlignment(QtCore.Qt.AlignCenter)
 
         self.slider_label2.setGeometry(560, 570, 50, 50)
@@ -157,7 +155,7 @@ class Window(QtWidgets.QMainWindow):
         print("filtruje")
 
     def valuechange(self):
-        angle = self.s1.value()
+        angle = self.s1.value()/10
         self.slider_label1.setText(angle.__str__()+"°")
 
     def valuechange_2(self):
@@ -173,6 +171,15 @@ class Window(QtWidgets.QMainWindow):
         arr = arr / arrMax
         return arr
 
+    def normalize_2nd(self, arr):
+        for i in range(arr.shape[0]):
+            for j in range(arr.shape[1]):
+                x = arr[i][j][0]
+                wart = min(1.8*(x**2), 1)
+                arr[i][j] += [wart, wart, wart]
+
+        return arr
+
     def inverseRadonTransform(self, radon_image):
 
         output = np.zeros((self.imgAs2DArray.shape[0], self.imgAs2DArray.shape[1], 3))
@@ -180,27 +187,48 @@ class Window(QtWidgets.QMainWindow):
         i = 0
         j = 0
 
+        show_progress = not self.b2.isChecked()
+
         for rr,cc in zip(self.rrs, self.ccs):
             for x,y in zip(rr, cc):
                 point = (x, y)
-                if (point[0] >= 0 and point[0] < output.shape[0] and
-                        point[1] >= 0 and point[1] < output.shape[1]):
+                if (0 <= point[0] < output.shape[0] and
+                        0 <= point[1] < output.shape[1]):
                         try:
                             pixel = self.sinogram[i][j]
                             output[x][y] += pixel
                         except:
                             print('exeption')
 
-
             j += 1
             if j > self.sinogram.shape[1] - 1:
+
+                QtGui.QGuiApplication.processEvents()
+                self.progress_label.setText("Progres: " + (round((100*(i/180))).__str__()) + "%")
+
+                print((100*(i/180)).__str__())
                 j = 0
                 i += 1
+                if not show_progress:
+                    self.set_output_image(output)
 
-
-        newOut = self.normalizeArray(output)
-        o_img = toimage(newOut)
+        new_out = self.normalizeArray(output)
+        new_out_filt = self.normalize_2nd(new_out)
+        o_img = toimage(new_out_filt)
         o_img.save("output.jpg")
+
+        qim = ImageQt(o_img)
+        pixMap = QtGui.QPixmap.fromImage(qim)
+        pixMap = pixMap.scaled(self.image_label3.width(), self.image_label3.height())
+        self.image_label3.setPixmap(pixMap)
+
+    def set_output_image(self, output):
+
+        QtGui.QGuiApplication.processEvents()
+
+        new_out = self.normalizeArray(output)
+        new_out_filt = self.normalize_2nd(new_out)
+        o_img = toimage(new_out_filt)
 
         qim = ImageQt(o_img)
         pixMap = QtGui.QPixmap.fromImage(qim)
@@ -209,11 +237,9 @@ class Window(QtWidgets.QMainWindow):
 
     def generateSinogram(self):
 
-        #self.imgAs2DArray = cv2.imread("Kwadraty2.jpg")
-
         imgSize = (len(self.imgAs2DArray), len(self.imgAs2DArray[0]), len(self.imgAs2DArray[0][0]))
 
-        step = self.s1.value()
+        step = self.s1.value()/10
         detectorNumber = self.s2.value()
         l = self.s3.value()
         r = sqrt((imgSize[0] / 2)**2 + (imgSize[1] / 2)**2)
@@ -223,12 +249,11 @@ class Window(QtWidgets.QMainWindow):
 
         show_progress = not self.b2.isChecked()
 
-
         for i in range(steps):
 
-            if show_progress:
-                QtGui.QGuiApplication.processEvents()
-                self.progress_label.setText("Progres: "+(round(100*((i+1)*step)/180)).__str__()+"%")
+
+            QtGui.QGuiApplication.processEvents()
+            self.progress_label.setText("Progres: "+(round(100*((i+1)*step)/180)).__str__()+"%")
             print(((i+1)*step).__str__())
 
             angle = i * step
@@ -250,8 +275,8 @@ class Window(QtWidgets.QMainWindow):
 
                 for z in range(len(rr)):
                     point = (rr[z], cc[z])
-                    if (point[0] >= 0 and point[0] < imgSize[1] and
-                            point[1] >= 0 and point[1] < imgSize[0]):
+                    if (0 <= point[0] < imgSize[1] and
+                            0 <= point[1] < imgSize[0]):
                         pixelsSum += self.imgAs2DArray[point[1]][point[0]][0]
 
                 self.sinogram[i][x] += [pixelsSum, pixelsSum, pixelsSum]
