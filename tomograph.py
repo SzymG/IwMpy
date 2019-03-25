@@ -199,6 +199,7 @@ class Window(QtWidgets.QMainWindow):
 
 
         newOut = self.normalizeArray(output)
+        #newOut1 = min(2*(newOut**2), 1)
         o_img = toimage(newOut)
         o_img.save("output.jpg")
 
