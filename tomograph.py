@@ -47,7 +47,7 @@ class Window(QtWidgets.QMainWindow):
         self.imgAs2DArray = 0
         self.array = []
 
-        self.sinogram = 0
+        #self.sinogram = 0
 
         self.rrs = []
         self.ccs = []
@@ -180,7 +180,7 @@ class Window(QtWidgets.QMainWindow):
 
         return arr
 
-    def inverseRadonTransform(self, radon_image):
+    def inverseRadonTransform(self, sinogram):
 
         output = np.zeros((self.imgAs2DArray.shape[0], self.imgAs2DArray.shape[1], 3))
 
@@ -195,13 +195,13 @@ class Window(QtWidgets.QMainWindow):
                 if (0 <= point[0] < output.shape[0] and
                         0 <= point[1] < output.shape[1]):
                         try:
-                            pixel = self.sinogram[i][j]
+                            pixel = sinogram[i][j]
                             output[x][y] += pixel
                         except:
                             print('exeption')
 
             j += 1
-            if j > self.sinogram.shape[1] - 1:
+            if j > sinogram.shape[1] - 1:
 
                 QtGui.QGuiApplication.processEvents()
                 self.progress_label.setText("Progres: " + (round((100*(i/180))).__str__()) + "%")
@@ -245,7 +245,7 @@ class Window(QtWidgets.QMainWindow):
         r = sqrt((imgSize[0] / 2)**2 + (imgSize[1] / 2)**2)
 
         steps = int(180 / step)
-        self.sinogram = np.zeros((steps, detectorNumber, 3))
+        sinogram = np.zeros((steps, detectorNumber, 3))
 
         show_progress = not self.b2.isChecked()
 
@@ -279,23 +279,24 @@ class Window(QtWidgets.QMainWindow):
                             0 <= point[1] < imgSize[0]):
                         pixelsSum += self.imgAs2DArray[point[1]][point[0]][0]
 
-                self.sinogram[i][x] += [pixelsSum, pixelsSum, pixelsSum]
+                sinogram[i][x] += [pixelsSum, pixelsSum, pixelsSum]
 
             if not show_progress:
                 QtGui.QGuiApplication.processEvents()
-                self.set_sinogram_on_label(self.sinogram)
+                self.set_sinogram_on_label(sinogram)
 
-        self.set_sinogram_on_label(self.sinogram)
+        self.set_sinogram_on_label(sinogram)
 
-        sinImg = toimage(self.sinogram)
-        sinImg.save("sin.jpg")
-        radon_image = cv2.imread('sin.jpg')
-        self.inverseRadonTransform(radon_image)
+        #sinImg = toimage(sinogram)
+        #sinImg.save("sin.jpg")
+        #radon_image = cv2.imread('sin.jpg')
 
         self.progress_label.setText("")
 
-        print('DONE')
+        print('Sinogram DONE')
         self.array = []
+
+        return sinogram
 
 
     def set_sinogram_on_label(self, sin):
@@ -321,8 +322,8 @@ class Window(QtWidgets.QMainWindow):
     def start(self):
         self.btn_start.setEnabled(False)
         self.b2.setEnabled(False)
-        self.generateSinogram()
-        #self.inverseRadonTransform(sinogram)
+        sinogram = self.generateSinogram()
+        self.inverseRadonTransform(sinogram)
         self.btn_start.setEnabled(True)
         self.b2.setEnabled(True)
 
