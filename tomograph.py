@@ -52,6 +52,8 @@ class Window(QtWidgets.QMainWindow):
         self.rrs = []
         self.ccs = []
 
+        self.filt_arr = []
+
     def initGUI(self):
 
         self.btn_start = QtWidgets.QPushButton("Start", self)
@@ -69,6 +71,7 @@ class Window(QtWidgets.QMainWindow):
         self.btn_filter.setGeometry(670, 25, 300, 50)
         self.btn_filter.setStyleSheet("font-size: 18px;")
         self.btn_filter.clicked.connect(self.filter_output)
+        self.btn_filter.setEnabled(False)
 
         self.b2.setGeometry(600, 25, 320, 50)
 
@@ -152,6 +155,27 @@ class Window(QtWidgets.QMainWindow):
         self.show()
 
     def filter_output(self):
+
+        self.btn_filter.setEnabled(False)
+
+        mask = [[1, 1, 1],
+                [1, 1, 1],
+                [1, 1, 1]]
+
+        arr = self.filt_arr
+
+        for i in range(1, arr.shape[0]-1):
+            for j in range(1, arr.shape[1]-1):
+                sum = 0
+                for m in range(-1, 1, 1):
+                    for n in range(-1, 1, 1):
+                        sum += mask[m][n] * arr[i-m][j-n][0]
+                arr[i][j] = [sum, sum, sum]
+
+        self.set_output_image(arr)
+
+        self.btn_filter.setEnabled(True)
+
         print("filtruje")
 
     def valuechange(self):
@@ -166,7 +190,7 @@ class Window(QtWidgets.QMainWindow):
         angle = self.s3.value()
         self.slider_label3.setText(angle.__str__()+"°")
 
-    def normalizeArray(self,arr):
+    def normalizeArray(self, arr):
         arrMax = np.amax(arr)
         arr = arr / arrMax
         return arr
@@ -215,6 +239,7 @@ class Window(QtWidgets.QMainWindow):
 
         new_out = self.normalizeArray(output)
         new_out_filt = self.normalize_2nd(new_out)
+        self.filt_arr = new_out_filt
         o_img = toimage(new_out_filt)
         o_img.save("output.jpg")
 
@@ -224,6 +249,8 @@ class Window(QtWidgets.QMainWindow):
         self.image_label3.setPixmap(pixMap)
 
     def set_output_image(self, output):
+
+        #TODO dopisz argument true/false decydujący czy zapisujemy jako .jpg
 
         QtGui.QGuiApplication.processEvents()
 
@@ -245,7 +272,7 @@ class Window(QtWidgets.QMainWindow):
         l = self.s3.value()
         r = sqrt((imgSize[0] / 2)**2 + (imgSize[1] / 2)**2)
 
-        steps = int(180 / step)
+        steps = int(360 / step)
         self.sinogram = np.zeros((steps, detectorNumber, 3))
 
         show_progress = not self.b2.isChecked()
@@ -298,7 +325,6 @@ class Window(QtWidgets.QMainWindow):
         print('DONE')
         self.array = []
 
-
     def set_sinogram_on_label(self, sin):
 
         sinogram = sin
@@ -315,15 +341,11 @@ class Window(QtWidgets.QMainWindow):
 
         return sinogram
 
-
-    def generateOutput(self):
-        print("generuje output")
-
     def start(self):
         self.btn_start.setEnabled(False)
         self.b2.setEnabled(False)
         self.generateSinogram()
-        #self.inverseRadonTransform(sinogram)
+        self.btn_filter.setEnabled(True)
         self.btn_start.setEnabled(True)
         self.b2.setEnabled(True)
 
@@ -334,8 +356,6 @@ class Window(QtWidgets.QMainWindow):
                                self.image_label1.height())
         self.image_label1.setPixmap(pixmap)
         self.imgAs2DArray = cv2.imread(name[0])
-        #resized = cv2.resize(self.imgAs2DArray, (300, 300), interpolation=cv2.INTER_AREA)
-        #self.imgAs2DArray = resized
         self.btn_start.setEnabled(True)
 
 def run():
