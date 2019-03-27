@@ -185,7 +185,7 @@ class Window(QtWidgets.QMainWindow):
         self.window = QtWidgets.QMainWindow()
         self.setGeometry(0, 0, 1000, 735)
         self.setWindowTitle("Tomograph")
-        self.initGUI()
+        self.initGUI()#
 
         self.imgAs2DArray = 0
         self.array = []
