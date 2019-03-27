@@ -4,11 +4,7 @@
     <bookmark url="file://$PROJECT_DIR$/tomograph.py" line="159" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="756bdf9a-110b-4435-8200-15a5fcd23d90" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/output.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/output.jpg" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tomograph.py" beforeDir="false" afterPath="$PROJECT_DIR$/tomograph.py" afterDir="false" />
-    </list>
+    <list default="true" id="756bdf9a-110b-4435-8200-15a5fcd23d90" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -64,10 +60,12 @@
         <counts>
           <entry key="Python Console" value="22" />
           <entry key="py" value="4931" />
+          <entry key="txt" value="35" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
+          <entry key="PLAIN_TEXT" value="35" />
           <entry key="Python" value="4953" />
         </counts>
       </usages-collector>
@@ -105,8 +103,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tomograph.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="459">
-              <caret line="138" lean-forward="true" selection-start-line="138" selection-end-line="138" />
+            <state relative-caret-position="320">
+              <caret line="167" lean-forward="true" selection-start-line="167" selection-end-line="167" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
                 <marker date="1553714522981" expanded="true" signature="10960:11110" ph="..." />
@@ -136,6 +134,7 @@
     </findStrings>
   </component>
   <component name="Git.Settings">
+    <option name="UPDATE_TYPE" value="MERGE" />
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
     <option name="RESET_MODE" value="HARD" />
   </component>
@@ -229,7 +228,21 @@
       <option name="project" value="LOCAL" />
       <updated>1553531011527</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Save output to dicom format.">
+      <created>1553715342922</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1553715342922</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Save output to dicom format.">
+      <created>1553715408788</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1553715408788</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TodoView">
@@ -245,12 +258,12 @@
     <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49682876" visible="true" weight="0.108630955" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49682876" visible="true" weight="0.108630955" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.50317127" side_tool="true" weight="0.15994713" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3295129" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49702382" visible="true" weight="0.17741935" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49702382" visible="true" weight="0.17741935" />
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4985119" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -295,7 +308,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Small fix." />
-    <option name="LAST_COMMIT_MESSAGE" value="Small fix." />
+    <MESSAGE value="Save output to dicom format." />
+    <option name="LAST_COMMIT_MESSAGE" value="Save output to dicom format." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -468,8 +482,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tomograph.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="459">
-          <caret line="138" lean-forward="true" selection-start-line="138" selection-end-line="138" />
+        <state relative-caret-position="320">
+          <caret line="167" lean-forward="true" selection-start-line="167" selection-end-line="167" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
             <marker date="1553714522981" expanded="true" signature="10960:11110" ph="..." />
