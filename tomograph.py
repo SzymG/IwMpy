@@ -75,7 +75,7 @@ class Window(QtWidgets.QMainWindow):
 
         self.b2.setGeometry(600, 25, 320, 50)
 
-        self.progress_label.setGeometry(120, 660, 210, 50)
+        self.progress_label.setGeometry(30, 670, 325, 50)
         self.progress_label.setStyleSheet("font-size: 18px;")
 
         self.label4.setGeometry(390, 25, 200, 50)
@@ -154,7 +154,27 @@ class Window(QtWidgets.QMainWindow):
 
         self.show()
 
+    def check_err(self):
+        img_in = self.imgAs2DArray
+        img_out = self.filt_arr
+        sum = 0
+        if (img_in.shape[0] != img_out.shape[0]) or (img_in.shape[1] != img_out.shape[1]):
+            print("Measures of input and output image are not the same")
+        else:
+            for i in range(img_in.shape[0]):
+                for j in range(img_in.shape[1]):
+                    sum += (img_in[i][j][0]/255 - img_out[i][j][0])**2
+
+            blad = sum/(img_in.shape[0]*img_out.shape[1])
+            blad = round(blad*10000)/10000
+            print(sum)
+            print(blad)
+
+            self.progress_label.setText("Błąd średniokwadratowy: "+blad.__str__())
+
     def filter_output(self):
+
+        print("filtruje")
 
         self.btn_filter.setEnabled(False)
 
@@ -172,11 +192,10 @@ class Window(QtWidgets.QMainWindow):
                         sum += mask[m][n] * arr[i-m][j-n][0]
                 arr[i][j] = [sum, sum, sum]
 
-        self.set_output_image(arr)
-
+        self.filt_arr = arr
+        self.set_output_image(arr, True)
+        self.check_err()
         self.btn_filter.setEnabled(True)
-
-        print("filtruje")
 
     def valuechange(self):
         angle = self.s1.value()/10
@@ -211,10 +230,12 @@ class Window(QtWidgets.QMainWindow):
         i = 0
         j = 0
 
-        step = self.s1.value()/10
         show_progress = not self.b2.isChecked()
 
+        o = 0
+
         for rr,cc in zip(self.rrs, self.ccs):
+            o += 1
             for x,y in zip(rr, cc):
                 point = (x, y)
                 if (0 <= point[0] < output.shape[0] and
@@ -229,34 +250,28 @@ class Window(QtWidgets.QMainWindow):
             if j > self.sinogram.shape[1] - 1:
 
                 QtGui.QGuiApplication.processEvents()
-                self.progress_label.setText("Progres: " + (round(100*((i+1)*step)/180).__str__()) + "%")
+                a = round(100*o/len(self.rrs))
+                self.progress_label.setText("Progres: " + (a.__str__()) + "%")
 
                 print((100*(i/180)).__str__())
                 j = 0
                 i += 1
                 if not show_progress:
-                    self.set_output_image(output)
+                    self.set_output_image(output, False)
 
-        new_out = self.normalizeArray(output)
-        new_out_filt = self.normalize_2nd(new_out)
-        self.filt_arr = new_out_filt
-        o_img = toimage(new_out_filt)
-        o_img.save("output.jpg")
+        self.set_output_image(output, True)
+        self.progress_label.setText("")
 
-        qim = ImageQt(o_img)
-        pixMap = QtGui.QPixmap.fromImage(qim)
-        pixMap = pixMap.scaled(self.image_label3.width(), self.image_label3.height())
-        self.image_label3.setPixmap(pixMap)
-
-    def set_output_image(self, output):
-
-        #TODO dopisz argument true/false decydujący czy zapisujemy jako .jpg
+    def set_output_image(self, output, save):
 
         QtGui.QGuiApplication.processEvents()
 
         new_out = self.normalizeArray(output)
         new_out_filt = self.normalize_2nd(new_out)
         o_img = toimage(new_out_filt)
+        if save:
+            self.filt_arr = new_out_filt
+            o_img.save("output.jpg")
 
         qim = ImageQt(o_img)
         pixMap = QtGui.QPixmap.fromImage(qim)
@@ -279,9 +294,8 @@ class Window(QtWidgets.QMainWindow):
 
         for i in range(steps):
 
-
             QtGui.QGuiApplication.processEvents()
-            self.progress_label.setText("Progres: "+(round(100*((i+1)*step)/180)).__str__()+"%")
+            self.progress_label.setText("Progres: "+round(100*i/steps).__str__()+"%")
             print(((i+1)*step).__str__())
 
             angle = i * step
@@ -345,6 +359,7 @@ class Window(QtWidgets.QMainWindow):
         self.btn_start.setEnabled(False)
         self.b2.setEnabled(False)
         self.generateSinogram()
+        self.check_err()
         self.btn_filter.setEnabled(True)
         self.btn_start.setEnabled(True)
         self.b2.setEnabled(True)
