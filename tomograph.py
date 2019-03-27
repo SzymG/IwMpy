@@ -114,16 +114,16 @@ class Window(QtWidgets.QMainWindow):
         self.image_label3.setStyleSheet("border: 1px solid #000000;")
 
         self.s1.setMinimum(1)
-        self.s1.setMaximum(20)
-        self.s1.setValue(10)
+        self.s1.setMaximum(40)
+        self.s1.setValue(20)
         self.s1.setTickInterval(1)
         self.s1.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.s1.setGeometry(30, 490, 300, 50)
         self.s1.valueChanged.connect(self.valuechange)
 
-        self.s2.setMinimum(100)
+        self.s2.setMinimum(90)
         self.s2.setMaximum(1000)
-        self.s2.setValue(200)
+        self.s2.setValue(180)
         self.s2.setTickInterval(100)
         self.s2.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.s2.setGeometry(350, 490, 300, 50)
@@ -242,7 +242,7 @@ class Window(QtWidgets.QMainWindow):
                         0 <= point[1] < output.shape[1]):
                         try:
                             pixel = self.sinogram[i][j]
-                            output[x][y] += pixel
+                            output[y][x] += pixel
                         except:
                             print('exeption')
 
@@ -333,7 +333,6 @@ class Window(QtWidgets.QMainWindow):
         sinImg.save("sin.jpg")
         radon_image = cv2.imread('sin.jpg')
         self.inverseRadonTransform(radon_image)
-
         self.progress_label.setText("")
 
         print('DONE')
