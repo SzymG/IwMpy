@@ -218,7 +218,7 @@ class Window(QtWidgets.QMainWindow):
         for i in range(arr.shape[0]):
             for j in range(arr.shape[1]):
                 x = arr[i][j][0]
-                wart = min(1.8*(x**2), 1)
+                wart = min(1.8*(x**3), 1)
                 arr[i][j] += [wart, wart, wart]
 
         return arr
