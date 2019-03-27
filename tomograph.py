@@ -5,9 +5,152 @@ from math import *
 from skimage.draw import line
 import numpy as np
 import cv2
-from PIL import Image
 from scipy.misc import toimage
 from PIL.ImageQt import ImageQt
+import pydicom
+from pydicom.dataset import Dataset, FileDataset
+import random
+import math
+
+
+class Ui_Dialog(QtWidgets.QDialog):
+    def __init__(self, pixMap = None, output = None):
+        super().__init__()
+
+        self.info_label = QtWidgets.QLabel(self)
+        self.forename_label = QtWidgets.QLabel(self)
+        self.surname_label = QtWidgets.QLabel(self)
+        self.id_label = QtWidgets.QLabel(self)
+        self.date_label = QtWidgets.QLabel(self)
+        self.image_label = QtWidgets.QLabel(self)
+        self.comments_label = QtWidgets.QLabel(self)
+
+        self.forename_text = QtWidgets.QTextEdit(self)
+        self.surname_text = QtWidgets.QTextEdit(self)
+
+        self.comments_text = QtWidgets.QTextEdit(self)
+
+        self.calendar = QtWidgets.QCalendarWidget(self)
+
+        self.submitButton = QtWidgets.QPushButton(self)
+
+        self.PatientID = random.randint(1, 1000)
+
+        self.setModal(True)
+        self.initGui(pixMap)
+
+
+    def initGui(self,pixMap):
+
+        self.info_label.setGeometry(10, 10, 200, 50)
+        self.info_label.setText("Dane pacjenta")
+        self.info_label.setStyleSheet("font-size: 25px;")
+
+        self.id_label.setGeometry(10, 60, 200, 50)
+        id = "Id: " + str(self.PatientID)
+        self.id_label.setText(id)
+        self.id_label.setStyleSheet("font-size: 18px;")
+
+        self.forename_label.setGeometry(10, 100, 200, 50)
+        self.forename_label.setText("Imię:")
+        self.forename_label.setStyleSheet("font-size: 18px;")
+
+        self.forename_text.setGeometry(95, 112, 100, 25)
+
+        self.surname_label.setGeometry(10, 140, 200, 50)
+        self.surname_label.setText("Nazwisko:")
+        self.surname_label.setStyleSheet("font-size: 18px;")
+
+        self.surname_text.setGeometry(95, 152, 100, 25)
+
+        self.date_label.setGeometry(10,180,200,50)
+        self.date_label.setText("Data badania: ")
+        self.date_label.setStyleSheet("font-size: 18px;")
+
+        self.calendar.setGeometry(10, 225, 350 ,350)
+        self.calendar.clicked.connect(self.calendarClicked)
+
+        self.comments_label.setGeometry(10, 585, 100, 25)
+        self.comments_label.setText("Komentarze")
+        self.comments_label.setStyleSheet("font-size: 18px;")
+
+        self.comments_text.setGeometry(10, 615, 350 ,75)
+
+
+        self.image_label.setGeometry(400, 10, 300, 300)
+        self.image_label.setStyleSheet("border: 1px solid #000000;")
+
+        self.submitButton.setGeometry(400,640,300,50)
+        self.submitButton.setText("Zapisz")
+        self.submitButton.setStyleSheet("font-size: 18px;")
+        self.submitButton.clicked.connect(self.saveImageAsDicom)
+
+        qim = ImageQt(pixMap)
+        pixM = QtGui.QPixmap.fromImage(qim)
+        pixM = pixM.scaled(self.image_label.width(), self.image_label.height())
+        self.image_label.setPixmap(pixM)
+
+    def calendarClicked(self):
+        self.date_label.setText("Data badania: " + self.calendar.selectedDate().toString("dd/MM/yy"))
+
+    def to2DArray(self,img):
+        tab = []
+        for a in range(3):
+            row = []
+            for i in range(img.shape[0]):
+                for j in range(img.shape[1]):
+                    tab.append(math.floor(img[i][j][0]))
+        return tab
+
+    def saveImageAsDicom(self):
+
+        name = QtWidgets.QFileDialog.getSaveFileName(self, 'Save File')[0]
+
+        x = name.split('.')
+
+        if len(x) == 1:
+            name = name + ".dcm"
+
+        if name is not "":
+
+            output = cv2.imread("output.jpg")
+
+            file_meta = Dataset()
+            file_meta.ImplementationClassUID = "1.2.3.4"
+            file_meta.MediaStorageSOPInstanceUID = "1.2.3"
+            file_meta.MediaStorageSOPClassUID = '1.2.840.10008.5.1.4.1.1.2'
+            ds = FileDataset(name, {}, file_meta=file_meta, preamble=b"\0" * 128)
+
+            ds.is_little_endian = True
+            ds.is_implicit_VR = True
+
+
+            ds.PatientID = str(self.PatientID)
+            ds.PatientName = self.forename_text.toPlainText() + ' ' + self.surname_text.toPlainText()
+            ds.ContentDate = self.calendar.selectedDate().toString("yyyyMMdd")
+            ds.ContentTime = '666666'
+            ds.ImageComments = self.comments_text.toPlainText()
+
+            ds.PhotometricInterpretation = "RGB"
+            ds.SamplesPerPixel = 3
+            ds.PlanarConfiguration = 1
+            ds.Columns = output.shape[0]
+            ds.Rows = output.shape[1]
+
+
+            result = self.to2DArray(output)
+            print(result)
+            ds.PixelData = np.array(result, np.int8).tostring()
+
+            ds.save_as(name, False)
+
+
+            print('Load file {} ...')
+            ds = pydicom.dcmread(name)
+            print(ds)
+
+
+            self.destroy()
 
 
 class Window(QtWidgets.QMainWindow):
@@ -47,10 +190,13 @@ class Window(QtWidgets.QMainWindow):
         self.imgAs2DArray = 0
         self.array = []
 
-        #self.sinogram = 0
+        self.sinogramPixMap = 0
+        self.output = 0
 
         self.rrs = []
         self.ccs = []
+
+        self.dialog = 0
 
     def initGUI(self):
 
@@ -59,6 +205,13 @@ class Window(QtWidgets.QMainWindow):
         self.btn_start.setStyleSheet("font-size: 18px;")
         self.btn_start.clicked.connect(self.start)
         self.btn_start.setEnabled(False)
+
+        self.btn_save = QtWidgets.QPushButton("Zapisz wynik", self)
+        self.btn_save.setGeometry(720, 660, 210, 50)
+        self.btn_save.setStyleSheet("font-size: 18px;")
+        self.btn_save.clicked.connect(self.saveResult)
+        self.btn_save.setEnabled(False)
+
 
         self.btn_choose = QtWidgets.QPushButton("Wybierz obraz wejściowy", self)
         self.btn_choose.setGeometry(30, 25, 300, 50)
@@ -154,6 +307,12 @@ class Window(QtWidgets.QMainWindow):
     def filter_output(self):
         print("filtruje")
 
+
+    def saveResult(self):
+        dialog = QtWidgets.QDialog()
+        self.dialog = Ui_Dialog(pixMap=self.sinogramPixMap, output=self.output)
+        self.dialog.show()
+
     def valuechange(self):
         angle = self.s1.value()/10
         self.slider_label1.setText(angle.__str__()+"°")
@@ -213,15 +372,24 @@ class Window(QtWidgets.QMainWindow):
                 if not show_progress:
                     self.set_output_image(output)
 
+        self.progress_label.setText("")
+
         new_out = self.normalizeArray(output)
+        self.output = new_out
+
+
         new_out_filt = self.normalize_2nd(new_out)
         o_img = toimage(new_out_filt)
         o_img.save("output.jpg")
+
+        self.sinogramPixMap = o_img;
 
         qim = ImageQt(o_img)
         pixMap = QtGui.QPixmap.fromImage(qim)
         pixMap = pixMap.scaled(self.image_label3.width(), self.image_label3.height())
         self.image_label3.setPixmap(pixMap)
+
+
 
     def set_output_image(self, output):
 
@@ -287,16 +455,12 @@ class Window(QtWidgets.QMainWindow):
                 self.set_sinogram_on_label(sinogram)
 
         self.set_sinogram_on_label(sinogram)
-
-        #sinImg = toimage(sinogram)
-        #sinImg.save("sin.jpg")
-        #radon_image = cv2.imread('sin.jpg')
-
         self.progress_label.setText("")
 
         print('Sinogram DONE')
         self.array = []
 
+        sinogram = self.normalizeArray(sinogram)
         return sinogram
 
 
@@ -321,22 +485,34 @@ class Window(QtWidgets.QMainWindow):
         print("generuje output")
 
     def start(self):
+        self.btn_save.setEnabled(False)
         self.btn_start.setEnabled(False)
         self.b2.setEnabled(False)
         sinogram = self.generateSinogram()
         self.inverseRadonTransform(sinogram)
         self.btn_start.setEnabled(True)
         self.b2.setEnabled(True)
+        self.btn_save.setEnabled(True)
 
     def choose_file(self):
         name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File')
-        pixmap = QtGui.QPixmap(name[0])
-        pixmap = pixmap.scaled(self.image_label1.width(),
-                               self.image_label1.height())
-        self.image_label1.setPixmap(pixmap)
-        self.imgAs2DArray = cv2.imread(name[0])
-        #resized = cv2.resize(self.imgAs2DArray, (300, 300), interpolation=cv2.INTER_AREA)
-        #self.imgAs2DArray = resized
+
+        names = name[0].split('.')
+        print(names)
+
+        if names[1] == "dcm" or names[1] == "DCM":
+            #print("dmc file!")
+
+            ds = pydicom.dcmread(name[0])
+            print(ds.pixel_array)
+
+        else:
+            pixmap = QtGui.QPixmap(name[0])
+            pixmap = pixmap.scaled(self.image_label1.width(),
+                                   self.image_label1.height())
+            self.image_label1.setPixmap(pixmap)
+            self.imgAs2DArray = cv2.imread(name[0])
+
         self.btn_start.setEnabled(True)
 
 def run():

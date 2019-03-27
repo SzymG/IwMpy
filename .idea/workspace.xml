@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/tomograph.py" line="16" />
+    <bookmark url="file://$PROJECT_DIR$/tomograph.py" line="159" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="756bdf9a-110b-4435-8200-15a5fcd23d90" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/sin.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/sin.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/output.jpg" beforeDir="false" afterPath="$PROJECT_DIR$/output.jpg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tomograph.py" beforeDir="false" afterPath="$PROJECT_DIR$/tomograph.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -57,6 +59,43 @@
         </counts>
       </usages-collector>
     </session>
+    <session id="-1601284057">
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="Python Console" value="22" />
+          <entry key="py" value="4931" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="Python" value="4953" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.lifecycle.project">
+        <counts>
+          <entry key="project.closed" value="6" />
+          <entry key="project.open.time.16" value="1" />
+          <entry key="project.open.time.17" value="2" />
+          <entry key="project.open.time.18" value="1" />
+          <entry key="project.open.time.20" value="1" />
+          <entry key="project.open.time.4" value="1" />
+          <entry key="project.opened" value="6" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="dcm" value="3" />
+          <entry key="jpg" value="9" />
+          <entry key="png" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="Image" value="10" />
+          <entry key="PLAIN_TEXT" value="3" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FavoritesManager">
     <favorites_list name="IwMpy" />
@@ -66,12 +105,12 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tomograph.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-544">
-              <caret line="202" column="18" lean-forward="true" selection-start-line="202" selection-start-column="18" selection-end-line="202" selection-end-column="18" />
+            <state relative-caret-position="459">
+              <caret line="138" lean-forward="true" selection-start-line="138" selection-end-line="138" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
-                <marker date="1553529413050" expanded="true" signature="6408:6637" ph="..." />
-                <marker date="1553529413050" expanded="true" signature="8154:8501" ph="..." />
+                <marker date="1553714522981" expanded="true" signature="10960:11110" ph="..." />
+                <marker date="1553714522981" expanded="true" signature="13440:13450" ph="..." />
               </folding>
             </state>
           </provider>
@@ -92,6 +131,8 @@
       <find>start</find>
       <find>self.sino</find>
       <find>sinogram</find>
+      <find>Artur</find>
+      <find>sinogramPixMap</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -107,15 +148,16 @@
     </option>
   </component>
   <component name="ProjectFrameBounds" extendedState="6">
-    <option name="x" value="950" />
-    <option name="width" value="975" />
-    <option name="height" value="1040" />
+    <option name="x" value="-7" />
+    <option name="width" value="697" />
+    <option name="height" value="745" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -127,123 +169,11 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/tomograph.py" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
-  </component>
-  <component name="RestoreUpdateTree" date="Moments ago" ActionInfo="_Update">
-    <UpdatedFiles>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Updated from server" />
-        <option name="myStatusName" value="Changed on server" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="CHANGED_ON_SERVER" />
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Updated" />
-          <option name="myStatusName" value="Changed" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="UPDATED" />
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/sin.jpg</PATH>
-          <PATH vcs="Git" revision="">$PROJECT_DIR$/tomograph.py</PATH>
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Created" />
-          <option name="myStatusName" value="Created" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="CREATED" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Deleted" />
-          <option name="myStatusName" value="Deleted" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="true" />
-          <option name="myId" value="REMOVED_FROM_REPOSITORY" />
-        </FILE-GROUP>
-        <FILE-GROUP>
-          <option name="myUpdateName" value="Restored" />
-          <option name="myStatusName" value="Will be restored" />
-          <option name="mySupportsDeletion" value="false" />
-          <option name="myCanBeAbsent" value="false" />
-          <option name="myId" value="RESTORED" />
-        </FILE-GROUP>
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Modified" />
-        <option name="myStatusName" value="Modified" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MODIFIED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Skipped" />
-        <option name="myStatusName" value="Skipped" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="SKIPPED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged with conflicts" />
-        <option name="myStatusName" value="Will be merged with conflicts" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED_WITH_CONFLICTS" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged with tree conflicts" />
-        <option name="myStatusName" value="Merged with tree conflicts" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED_WITH_TREE_CONFLICT" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged with property conflicts" />
-        <option name="myStatusName" value="Will be merged with property conflicts" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED_WITH_PROPERTY_CONFLICT" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Merged" />
-        <option name="myStatusName" value="Will be merged" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="MERGED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Not in repository" />
-        <option name="myStatusName" value="Not in repository" />
-        <option name="mySupportsDeletion" value="true" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="UNKNOWN" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Locally added" />
-        <option name="myStatusName" value="Locally added" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="LOCALLY_ADDED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Locally removed" />
-        <option name="myStatusName" value="Locally removed" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="LOCALLY_REMOVED" />
-      </FILE-GROUP>
-      <FILE-GROUP>
-        <option name="myUpdateName" value="Switched" />
-        <option name="myStatusName" value="Switched" />
-        <option name="mySupportsDeletion" value="false" />
-        <option name="myCanBeAbsent" value="false" />
-        <option name="myId" value="SWITCHED" />
-      </FILE-GROUP>
-    </UpdatedFiles>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -265,7 +195,7 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="C:\Users\szymo\OneDrive\Pulpit\IwMpy\venv\Scripts\python.exe" />
+      <option name="SDK_HOME" value="D:\Programy\AnacondaPython\python.exe" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
@@ -291,6 +221,14 @@
       <option name="presentableId" value="Default" />
       <updated>1552926241276</updated>
     </task>
+    <task id="LOCAL-00001" summary="Small fix.">
+      <created>1553531011527</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1553531011527</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TodoView">
@@ -303,23 +241,23 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-7" y="-7" width="1550" height="838" extended-state="6" />
+    <frame x="-8" y="-8" width="1382" height="754" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49682876" visible="true" weight="0.14210178" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.49682876" visible="true" weight="0.108630955" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.50317127" side_tool="true" weight="0.15994713" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.3295129" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4990086" visible="true" weight="0.32907802" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4990086" weight="0.4" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.49702382" visible="true" weight="0.17741935" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.4985119" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32624114" />
       <window_info anchor="bottom" id="Terminal" order="8" weight="0.3328551" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5009914" side_tool="true" weight="0.4" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32907802" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5029762" side_tool="true" weight="0.33870968" />
+      <window_info anchor="bottom" id="Python Console" order="10" sideWeight="0.49925596" weight="0.32903227" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -353,6 +291,10 @@
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Small fix." />
+    <option name="LAST_COMMIT_MESSAGE" value="Small fix." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -441,11 +383,7 @@
     <entry file="file://$PROJECT_DIR$/sin.jpg">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$USER_HOME$/Downloads/inverse_radon.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-459" />
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/Downloads/inverse_radon.py" />
     <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/numpy/core/numeric.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="125">
@@ -481,13 +419,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Anaconda3/Lib/codecs.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="166">
-          <caret line="311" selection-start-line="311" selection-end-line="311" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$USER_HOME$/Anaconda3/Lib/codecs.py" />
     <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/numpy/core/_internal.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="217">
@@ -516,20 +448,31 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/output.jpg">
+    <entry file="file://$PROJECT_DIR$/Shepp_logan.jpg">
       <provider selected="true" editor-type-id="images" />
     </entry>
-    <entry file="file://$PROJECT_DIR$/Shepp_logan.jpg">
+    <entry file="file://$PROJECT_DIR$/test.dcm" />
+    <entry file="file://$PROJECT_DIR$/result.dcm" />
+    <entry file="file://$PROJECT_DIR$/tmp.jpg" />
+    <entry file="file://$PROJECT_DIR$/testowo.dcm" />
+    <entry file="file://$PROJECT_DIR$/moj.png" />
+    <entry file="file://$PROJECT_DIR$/Kwadraty2.jpg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/Kolo.jpg">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/output.jpg">
       <provider selected="true" editor-type-id="images" />
     </entry>
     <entry file="file://$PROJECT_DIR$/tomograph.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-544">
-          <caret line="202" column="18" lean-forward="true" selection-start-line="202" selection-start-column="18" selection-end-line="202" selection-end-column="18" />
+        <state relative-caret-position="459">
+          <caret line="138" lean-forward="true" selection-start-line="138" selection-end-line="138" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
-            <marker date="1553529413050" expanded="true" signature="6408:6637" ph="..." />
-            <marker date="1553529413050" expanded="true" signature="8154:8501" ph="..." />
+            <marker date="1553714522981" expanded="true" signature="10960:11110" ph="..." />
+            <marker date="1553714522981" expanded="true" signature="13440:13450" ph="..." />
           </folding>
         </state>
       </provider>
