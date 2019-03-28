@@ -30,6 +30,7 @@ class dicom_Dialog(QtWidgets.QDialog):
         self.initGui(pixMap, args)
 
         self.setModal(True)
+        self.setWindowTitle("Pacjent")
 
 
     def initGui(self, pixMap, args):
@@ -41,8 +42,7 @@ class dicom_Dialog(QtWidgets.QDialog):
         Forename = args[1].split(' ')[0]
         Surname = args[1].split(' ')[1]
 
-        print(Date)
-
+        Date = Date[:4] + "-" + Date[4:6] + "-" + Date[6:]
 
         self.image_label.setGeometry(300, 10, 300, 300)
         pixMap = pixMap.scaled(self.image_label.width(), self.image_label.height())
@@ -108,6 +108,7 @@ class Ui_Dialog(QtWidgets.QDialog):
         self.PatientID = random.randint(1, 1000)
 
         self.setModal(True)
+        self.setWindowTitle("Zapis")
         self.initGui(pixMap)
 
 
@@ -141,23 +142,22 @@ class Ui_Dialog(QtWidgets.QDialog):
         self.calendar.setGeometry(10, 225, 350 ,350)
         self.calendar.clicked.connect(self.calendarClicked)
 
-        self.comments_label.setGeometry(10, 585, 100, 25)
+        self.comments_label.setGeometry(400, 320, 100, 25)
         self.comments_label.setText("Komentarze")
         self.comments_label.setStyleSheet("font-size: 18px;")
 
-        self.comments_text.setGeometry(10, 615, 350 ,75)
+        self.comments_text.setGeometry(400, 350, 300 ,75)
 
 
         self.image_label.setGeometry(400, 10, 300, 300)
         self.image_label.setStyleSheet("border: 1px solid #000000;")
 
-        self.submitButton.setGeometry(400,640,300,50)
+        self.submitButton.setGeometry(400,525,300,50)
         self.submitButton.setText("Zapisz")
         self.submitButton.setStyleSheet("font-size: 18px;")
         self.submitButton.clicked.connect(self.saveImageAsDicom)
 
-        #qim = ImageQt(pixMap)
-        #pixM = QtGui.QPixmap.fromImage(qim)
+
         pixMap = pixMap.scaled(self.image_label.width(), self.image_label.height())
         self.image_label.setPixmap(pixMap)
 
@@ -210,7 +210,7 @@ class Ui_Dialog(QtWidgets.QDialog):
 
 
             result = self.to2DArray(output)
-            print(result)
+
             ds.PixelData = np.array(result, np.int8).tostring()
 
             ds.save_as(name, False)
@@ -383,14 +383,13 @@ class Window(QtWidgets.QMainWindow):
 
             blad = sum/(img_in.shape[0]*img_out.shape[1])
             blad = round(blad*10000)/10000
-            print(sum)
-            print(blad)
+
 
             self.progress_label.setText("Błąd średniokwadratowy: "+blad.__str__())
 
     def filter_output(self):
 
-        print("filtruje")
+
 
         self.btn_filter.setEnabled(False)
 
@@ -488,7 +487,7 @@ class Window(QtWidgets.QMainWindow):
                 a = round(100*o/len(self.rrs))
                 self.progress_label.setText("Progres: " + (a.__str__()) + "%")
 
-                print((100*(i/180)).__str__())
+
                 j = 0
                 i += 1
                 if not show_progress:
@@ -533,7 +532,7 @@ class Window(QtWidgets.QMainWindow):
 
             QtGui.QGuiApplication.processEvents()
             self.progress_label.setText("Progres: "+round(100*i/steps).__str__()+"%")
-            print(((i+1)*step).__str__())
+
 
             angle = i * step
             emiterX = int((r * cos(radians(angle))) + (imgSize[0] / 2))
@@ -566,12 +565,11 @@ class Window(QtWidgets.QMainWindow):
 
         self.set_sinogram_on_label(self.sinogram)
 
-        #sinImg = toimage(self.sinogram)
-        #sinImg.save("sin.jpg")
+
         radon_image = cv2.imread('sin.jpg')
         self.progress_label.setText("")
 
-        print('DONE')
+
         self.array = []
 
     def set_sinogram_on_label(self, sin):
@@ -591,8 +589,6 @@ class Window(QtWidgets.QMainWindow):
         return sinogram
 
 
-    def generateOutput(self):
-        print("generuje output")
 
     def start(self):
 
@@ -617,11 +613,8 @@ class Window(QtWidgets.QMainWindow):
         name = QtWidgets.QFileDialog.getOpenFileName(self, 'Open File')
 
         names = name[0].split('.')
-        print(names)
 
         if names[1] == "dcm" or names[1] == "DCM":
-            #print("dmc file!")
-
             ds = pydicom.dcmread(name[0], force=True)
 
 
