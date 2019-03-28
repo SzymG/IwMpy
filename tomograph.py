@@ -5,7 +5,6 @@ from math import *
 from skimage.draw import line
 import numpy as np
 import cv2
-from PIL import Image
 from scipy.misc import toimage
 from PIL.ImageQt import ImageQt
 import pydicom
@@ -14,8 +13,79 @@ import random
 import math
 
 
+
+class dicom_Dialog(QtWidgets.QDialog):
+    def __init__(self, pixMap = None, args = None):
+        super().__init__()
+        self.image_label = QtWidgets.QLabel(self)
+        self.parient_id_label = QtWidgets.QLabel(self)
+        self.parient_forename_label = QtWidgets.QLabel(self)
+        self.parient_surname_label = QtWidgets.QLabel(self)
+        self.comments_label = QtWidgets.QLabel(self)
+        self.date_label = QtWidgets.QLabel(self)
+        self.info_label = QtWidgets.QLabel(self)
+
+        self.ok_button = QtWidgets.QPushButton(self)
+
+        self.initGui(pixMap, args)
+
+        self.setModal(True)
+
+
+    def initGui(self, pixMap, args):
+
+        PatinetID = args[0]
+        Date = args[2]
+        Comments = args[3]
+
+        Forename = args[1].split(' ')[0]
+        Surname = args[1].split(' ')[1]
+
+        print(Date)
+
+
+        self.image_label.setGeometry(300, 10, 300, 300)
+        pixMap = pixMap.scaled(self.image_label.width(), self.image_label.height())
+        self.image_label.setPixmap(pixMap)
+
+        self.info_label.setGeometry(10, 10, 400, 50)
+        self.info_label.setText("Dane pacjenta")
+        self.info_label.setStyleSheet("font-size: 30px;")
+
+        self.parient_id_label.setGeometry(10, 50, 400, 50)
+        self.parient_id_label.setText("ID: " + PatinetID)
+        self.parient_id_label.setStyleSheet("font-size: 18px;")
+
+        self.parient_forename_label.setGeometry(10, 90, 400, 50)
+        self.parient_forename_label.setText("Imię: "+ Forename)
+        self.parient_forename_label.setStyleSheet("font-size: 18px;")
+
+        self.parient_surname_label.setGeometry(10, 130, 400, 50)
+        self.parient_surname_label.setText("Nazwisko: " + Surname)
+        self.parient_surname_label.setStyleSheet("font-size: 18px;")
+
+        self.date_label.setGeometry(10, 170, 400, 50)
+        self.date_label.setText("Data badania: " + Date)
+        self.date_label.setStyleSheet("font-size: 18px;")
+
+        self.comments_label.setGeometry(10, 210, 400, 50)
+        self.comments_label.setText("Komentarz: " + Comments)
+        self.comments_label.setStyleSheet("font-size: 18px;")
+
+        self.ok_button.setGeometry(10,260,280,50)
+        self.ok_button.setText("Zamknij")
+        self.ok_button.setStyleSheet("font-size: 18px;")
+        self.ok_button.clicked.connect(self.exit)
+
+
+    def exit(self):
+        self.destroy()
+
+
+
+
 class Ui_Dialog(QtWidgets.QDialog):
-    def __init__(self, pixMap = None, output = None):
+    def __init__(self, pixMap = None):
         super().__init__()
 
         self.info_label = QtWidgets.QLabel(self)
@@ -86,10 +156,10 @@ class Ui_Dialog(QtWidgets.QDialog):
         self.submitButton.setStyleSheet("font-size: 18px;")
         self.submitButton.clicked.connect(self.saveImageAsDicom)
 
-        qim = ImageQt(pixMap)
-        pixM = QtGui.QPixmap.fromImage(qim)
-        pixM = pixM.scaled(self.image_label.width(), self.image_label.height())
-        self.image_label.setPixmap(pixM)
+        #qim = ImageQt(pixMap)
+        #pixM = QtGui.QPixmap.fromImage(qim)
+        pixMap = pixMap.scaled(self.image_label.width(), self.image_label.height())
+        self.image_label.setPixmap(pixMap)
 
     def calendarClicked(self):
         self.date_label.setText("Data badania: " + self.calendar.selectedDate().toString("dd/MM/yy"))
@@ -145,12 +215,6 @@ class Ui_Dialog(QtWidgets.QDialog):
 
             ds.save_as(name, False)
 
-
-            print('Load file {} ...')
-            ds = pydicom.dcmread(name)
-            print(ds)
-
-
             self.destroy()
 
 
@@ -191,7 +255,7 @@ class Window(QtWidgets.QMainWindow):
         self.imgAs2DArray = 0
         self.array = []
 
-        self.sinogramPixMap = 0
+        self.outputPixMap = 0
         self.output = 0
 
         self.rrs = []
@@ -307,6 +371,8 @@ class Window(QtWidgets.QMainWindow):
     def check_err(self):
         img_in = self.imgAs2DArray
         img_out = self.filt_arr
+
+
         sum = 0
         if (img_in.shape[0] != img_out.shape[0]) or (img_in.shape[1] != img_out.shape[1]):
             print("Measures of input and output image are not the same")
@@ -350,7 +416,7 @@ class Window(QtWidgets.QMainWindow):
 
     def saveResult(self):
         dialog = QtWidgets.QDialog()
-        self.dialog = Ui_Dialog(pixMap=self.sinogramPixMap, output=self.output)
+        self.dialog = Ui_Dialog(pixMap=self.outputPixMap)
         self.dialog.show()
 
     def valuechange(self):
@@ -379,7 +445,19 @@ class Window(QtWidgets.QMainWindow):
 
         return arr
 
-    def inverseRadonTransform(self, radon_image):
+    def to3DArray(self,img, cols, rows):
+        result = np.zeros((rows, cols, 3))
+        i = 0
+        j = 0
+        for a in range(int(len(img) / 3)):
+            result[i][j] = img[a] / 255
+            j += 1
+            if j >= rows:
+                j = 0
+                i += 1
+        return result
+
+    def inverseRadonTransform(self):
 
         output = np.zeros((self.imgAs2DArray.shape[0], self.imgAs2DArray.shape[1], 3))
 
@@ -434,19 +512,8 @@ class Window(QtWidgets.QMainWindow):
         pixMap = QtGui.QPixmap.fromImage(qim)
         pixMap = pixMap.scaled(self.image_label3.width(), self.image_label3.height())
         self.image_label3.setPixmap(pixMap)
+        self.outputPixMap = pixMap
 
-    def set_output_image(self, output):
-
-        QtGui.QGuiApplication.processEvents()
-
-        new_out = self.normalizeArray(output)
-        new_out_filt = self.normalize_2nd(new_out)
-        o_img = toimage(new_out_filt)
-
-        qim = ImageQt(o_img)
-        pixMap = QtGui.QPixmap.fromImage(qim)
-        pixMap = pixMap.scaled(self.image_label3.width(), self.image_label3.height())
-        self.image_label3.setPixmap(pixMap)
 
     def generateSinogram(self):
 
@@ -499,10 +566,9 @@ class Window(QtWidgets.QMainWindow):
 
         self.set_sinogram_on_label(self.sinogram)
 
-        sinImg = toimage(self.sinogram)
-        sinImg.save("sin.jpg")
+        #sinImg = toimage(self.sinogram)
+        #sinImg.save("sin.jpg")
         radon_image = cv2.imread('sin.jpg')
-        self.inverseRadonTransform(radon_image)
         self.progress_label.setText("")
 
         print('DONE')
@@ -529,11 +595,18 @@ class Window(QtWidgets.QMainWindow):
         print("generuje output")
 
     def start(self):
+
+        self.outputPixMap = 0
+        self.output = 0
+
+        self.rrs = []
+        self.ccs = []
+
         self.btn_save.setEnabled(False)
         self.btn_start.setEnabled(False)
         self.b2.setEnabled(False)
-        sinogram = self.generateSinogram()
-        self.inverseRadonTransform(sinogram)
+        self.generateSinogram()
+        self.inverseRadonTransform()
         self.check_err()
         self.btn_filter.setEnabled(True)
         self.btn_start.setEnabled(True)
@@ -549,8 +622,26 @@ class Window(QtWidgets.QMainWindow):
         if names[1] == "dcm" or names[1] == "DCM":
             #print("dmc file!")
 
-            ds = pydicom.dcmread(name[0])
-            print(ds.pixel_array)
+            ds = pydicom.dcmread(name[0], force=True)
+
+
+            cols = int(ds.Columns)
+            rows = int(ds.Rows)
+
+            img = np.frombuffer(ds.PixelData, dtype=np.uint8)
+            image = self.to3DArray(img, cols, rows)
+            dicomImage = toimage(image)
+            qim = ImageQt(dicomImage)
+            pixMap = QtGui.QPixmap.fromImage(qim)
+
+
+
+
+            dial = dicom_Dialog(pixMap,[str(ds.PatientID), str(ds.PatientName)
+                , str(ds.ContentDate), str(ds.ImageComments)])
+            dial.exec()
+
+
 
         else:
             pixmap = QtGui.QPixmap(name[0])
